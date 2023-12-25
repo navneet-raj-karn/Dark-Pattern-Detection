@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.URLUtil
 import android.webkit.WebChromeClient
 import android.webkit.WebViewClient
 import com.example.safebrowser.databinding.FragmentBrowseBinding
@@ -37,8 +38,12 @@ class BrowseFragment (private var urlNew:String) : Fragment() {
             settings.displayZoomControls=false
             webViewClient= WebViewClient()
             webChromeClient= WebChromeClient()
+            when{
+                URLUtil.isValidUrl(urlNew)->loadUrl(urlNew)
+                urlNew.contains(".com",ignoreCase = true)->loadUrl(urlNew)
+                else->loadUrl("https://www.google.com/search?q=$urlNew")
+            }
 
-            loadUrl(urlNew)
         }
     }
 }
