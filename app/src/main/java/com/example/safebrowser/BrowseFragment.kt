@@ -13,7 +13,7 @@ import com.example.safebrowser.databinding.FragmentHomeBinding
 
 class BrowseFragment (private var urlNew:String) : Fragment() {
 
-    private lateinit var binding: FragmentBrowseBinding
+    lateinit var binding: FragmentBrowseBinding
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreateView(

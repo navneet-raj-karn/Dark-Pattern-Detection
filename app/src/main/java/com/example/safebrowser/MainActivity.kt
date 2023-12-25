@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.safebrowser.databinding.ActivityMainBinding
+import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,6 +30,28 @@ class MainActivity : AppCompatActivity() {
         tabsList.add(HomeFragment())
         binding.myPager.adapter=TabsAdapter(supportFragmentManager, lifecycle)
         binding.myPager.isUserInputEnabled=false
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+
+    override fun onBackPressed() {
+
+        var frag:BrowseFragment?=null
+        try {
+            frag= tabsList[binding.myPager.currentItem] as BrowseFragment
+        }catch (e:Exception){}
+
+        when{
+            frag?.binding?.webView?.canGoBack()==true->frag.binding.webView.goBack()
+            binding.myPager.currentItem!=0->{
+                tabsList.removeAt(binding.myPager.currentItem)
+                binding.myPager.adapter?.notifyDataSetChanged()
+                binding.myPager.currentItem= tabsList.size-1
+            }
+
+            else ->super.onBackPressed()
+        }
+
     }
 
 
