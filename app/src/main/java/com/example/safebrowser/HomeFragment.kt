@@ -38,11 +38,19 @@ class HomeFragment : Fragment() {
                 }
                 return true
             }
-
-
             override fun onQueryTextChange(newText: String?): Boolean = false
-
         })
+        mainActivityRef.binding.goBtn.setOnClickListener {
+
+            if(mainActivityRef.checkForInternet(requireContext())){
+                mainActivityRef.changeTab(mainActivityRef.binding.topSearchBar.text.toString(),
+                    BrowseFragment(mainActivityRef.binding.topSearchBar.text.toString()))
+            }else{
+                Snackbar.make(binding.root,"Internet not Connected",3000).show()
+            }
+        }
+
+
 
     }
 }

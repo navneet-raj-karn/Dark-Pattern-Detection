@@ -24,6 +24,7 @@
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_search"/>
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/topSearchBar"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:hint="@string/enter_url"
@@ -32,6 +33,7 @@
                 android:background="@drawable/custom_design"/>
             
             <ImageButton
+                android:id="@+id/goBtn"
                 android:layout_width="40dp"
                 android:layout_height="match_parent"
                 android:background="?attr/selectableItemBackground"
