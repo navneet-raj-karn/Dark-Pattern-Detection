@@ -21,6 +21,7 @@ class BrowseFragment (private var urlNew:String) : Fragment() {
 
 
     lateinit var binding: FragmentBrowseBinding
+    private var darkPatternFound = false
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreateView(
@@ -60,6 +61,7 @@ class BrowseFragment (private var urlNew:String) : Fragment() {
 
                 override fun onPageFinished(view: WebView?, url: String?) {
                     super.onPageFinished(view, url)
+
                     extractAndPassText()
 
 //                    binding.webView.evaluateJavascript("document.body.textContent") { text ->
@@ -92,39 +94,30 @@ class BrowseFragment (private var urlNew:String) : Fragment() {
     }
 
     private fun processText(text: String) {
-//        Toast.makeText( requireContext(), "Prediction Started", Toast.LENGTH_LONG).show()
-//        val text="Only two left"
-//        println("Extracted Text: $text")
-//
-        val mainActivity= requireActivity() as MainActivity
-//        val result=mainActivity.performPrediction(text)
-//        Toast.makeText( requireContext(), "Predicted = $result", Toast.LENGTH_LONG).show()
-
-
+        val mainActivity = requireActivity() as MainActivity
         val maxChunkSize = 50
-
 
         val sentences = text.split("\\.".toRegex())
 
-        var currentChunk = ""
         for (sentence in sentences) {
-            val potentialChunk = "$currentChunk $sentence".trim()
-            currentChunk = if (potentialChunk.length > maxChunkSize || sentence == sentences.last()) {
+            if (!darkPatternFound) { // Check if a dark pattern is already found
+                val potentialChunk = "$sentence".trim()
 
                 val result = mainActivity.performPrediction(potentialChunk)
-                if (result == "Dark Pattern"){
-                    Toast.makeText(requireContext(), "Predicted = $result", Toast.LENGTH_LONG)
-                        .show()
+                if (result == "Dark Pattern") {
+                    darkPatternFound = true
+                    Toast.makeText(requireContext(), "Predicted = $result", Toast.LENGTH_LONG).show()
                     break
                 }
-                sentence;
             } else {
-
-                potentialChunk
+                break // Dark pattern already found, no need to search further
             }
         }
 
-
+        // Check if a dark pattern was found in the whole webpage
+        if (!darkPatternFound) {
+            Toast.makeText(requireContext(), "No Dark Pattern found in the whole webpage", Toast.LENGTH_LONG).show()
+        }
     }
 
 

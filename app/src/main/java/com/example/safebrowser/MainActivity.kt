@@ -125,10 +125,11 @@ class MainActivity : AppCompatActivity() {
             //binding.output.text = "Prediction: $predictedClass"
             return predictedClass
         }else{
-            Toast.makeText( this@MainActivity, "Please enter a message.", Toast.LENGTH_LONG).show();
-        }
+            //Toast.makeText( this@MainActivity, "Please enter a message.", Toast.LENGTH_LONG).show();
 
+        }
         return "Prediction Unsuccessful"
+
 
     }
 
@@ -145,13 +146,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Perform inference, given the input sequence.
-    private fun classifySequence (sequence : IntArray ): FloatArray {
-        // Input shape -> ( 1 , INPUT_MAXLEN )
-        val inputs : Array<FloatArray> = arrayOf( sequence.map { it.toFloat() }.toFloatArray() )
-        // Output shape -> ( 1 , 2 ) ( as numClasses = 2 )
-        val outputs : Array<FloatArray> = arrayOf(FloatArray(1))
-        tfLiteInterpreter?.run( inputs , outputs )
-        return outputs[0]
+    private fun classifySequence(sequence: IntArray): FloatArray {
+        try {
+            // Input shape -> (1, INPUT_MAXLEN)
+            val inputs: Array<FloatArray> = arrayOf(sequence.map { it.toFloat() }.toFloatArray())
+            // Output shape -> (1, 2) (as numClasses = 2)
+            val outputs: Array<FloatArray> = arrayOf(FloatArray(1))
+            tfLiteInterpreter?.run(inputs, outputs)
+            return outputs[0]
+        } catch (e: Exception) {
+            e.printStackTrace()
+            throw e // Rethrow the exception for further analysis
+        }
     }
+
 
 }
