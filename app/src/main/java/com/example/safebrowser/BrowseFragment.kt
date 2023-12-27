@@ -1,20 +1,18 @@
 package com.example.safebrowser
 
 import android.annotation.SuppressLint
-import android.app.ProgressDialog
 import android.os.Bundle
-import android.text.TextUtils
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.URLUtil
 import android.webkit.WebChromeClient
-import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
 import com.example.safebrowser.databinding.FragmentBrowseBinding
+import kotlin.time.times
 
 
 class BrowseFragment (private var urlNew:String) : Fragment() {
@@ -61,7 +59,6 @@ class BrowseFragment (private var urlNew:String) : Fragment() {
 
                 override fun onPageFinished(view: WebView?, url: String?) {
                     super.onPageFinished(view, url)
-
                     extractAndPassText()
 
 //                    binding.webView.evaluateJavascript("document.body.textContent") { text ->
@@ -84,42 +81,111 @@ class BrowseFragment (private var urlNew:String) : Fragment() {
     }
 
     private fun extractAndPassText(){
-        binding.webView.evaluateJavascript("document.documentElement.innerText") { result ->
-            // 'result' contains the text content
-            // You can now pass this text to your model or perform any other operations
-            // For example, you can log it or send it to another function
-            processText(result)
+        binding.webView.evaluateJavascript("(function () {\n" +
+                "  const walker = document.createTreeWalker(\n" +
+                "    document.body,\n" +
+                "    NodeFilter.SHOW_TEXT,\n" +
+                "    null,\n" +
+                "    false\n" +
+                "  );\n" +
+                "\n" +
+                "  let node;\n" +
+                "  const visibleText = [];\n" +
+                "\n" +
+                "  while ((node = walker.nextNode())) {\n" +
+                "    const parentElement = node.parentElement;\n" +
+                "\n" +
+                "    // Check if the parent element is visible\n" +
+                "    if (\n" +
+                "      parentElement &&\n" +
+                "      (parentElement.offsetWidth > 0 ||\n" +
+                "        parentElement.offsetHeight > 0 ||\n" +
+                "        (parentElement.getClientRects().length > 0 &&\n" +
+                "          parentElement.getClientRects()[0].width > 0 &&\n" +
+                "          parentElement.getClientRects()[0].height > 0))\n" +
+                "    ) {\n" +
+                "      visibleText.push(node.textContent.trim());\n" +
+                "    }\n" +
+                "  }\n" +
+                "\n" +
+                "  return visibleText.join(' ');\n" +
+                "}\n)();")
+        { html ->
+            println("Printing Here Start");
+            val chunks = html.chunkString(45)
+            println("Printing Here Processed");
+            println("Printing Here end");
+            processText(chunks)
+            //println(html)
+            // code here
         }
 
     }
 
-    private fun processText(text: String) {
+    private fun processText(chunks: List<String>) {
         val mainActivity = requireActivity() as MainActivity
         val maxChunkSize = 50
+        var darkcnt=1;
+        var nondark=1;
 
-        val sentences = text.split("\\.".toRegex())
+        for (item in chunks) {
+            println("chunk is "+item)
+            val result = mainActivity.performPrediction(item)
+            if (result == "Dark Pattern") {
+                darkPatternFound = true
+                darkcnt++; // Toast.makeText(requireContext(), "$result for "+ item, Toast.LENGTH_LONG).show()
+            }
+            else
+                nondark++;
+        }
+        //checking ratio but not perfect
+        println(darkcnt*100/(nondark+darkcnt))
+        println(nondark*100/(nondark+darkcnt))
 
-        for (sentence in sentences) {
-            if (!darkPatternFound) { // Check if a dark pattern is already found
-                val potentialChunk = "$sentence".trim()
+        if(darkcnt*100/(nondark+darkcnt)>=5)
+            Toast.makeText(requireContext(), "Dark Detected", Toast.LENGTH_LONG).show()
+        else
+            Toast.makeText(requireContext(), "Clean Page", Toast.LENGTH_LONG).show()
 
-                val result = mainActivity.performPrediction(potentialChunk)
-                if (result == "Dark Pattern") {
-                    darkPatternFound = true
-                    Toast.makeText(requireContext(), "Predicted = $result", Toast.LENGTH_LONG).show()
-                    break
-                }
-            } else {
-                break // Dark pattern already found, no need to search further
+        // Dark pattern already found, no need to search further
+
+
+
+//        for (sentence in sentences) {
+//            if (!darkPatternFound) { // Check if a dark pattern is already found
+//                val potentialChunk = "$sentence".trim()
+//
+//                val result = mainActivity.performPrediction(potentialChunk)
+//                if (result == "Dark Pattern") {
+//                    darkPatternFound = true
+//                    Toast.makeText(requireContext(), "Predicted = $result", Toast.LENGTH_LONG).show()
+//                    break
+//                }
+//            } else {
+//                break // Dark pattern already found, no need to search further
+//            }
+//        }
+
+
+    }
+    //chunking those scrapped text , bad Time complexity but okay
+    fun String.chunkString(maxLength: Int): List<String> {
+        val chunks = mutableListOf<String>()
+        var startIndex = 0
+        while (startIndex < this.length) {
+            var endIndex = minOf(startIndex + maxLength, this.length)
+            while (endIndex < this.length && this[endIndex - 1] !in listOf(' ', '.')) {
+                endIndex--
+            }
+            chunks.add(this.substring(startIndex, endIndex).trim())
+            startIndex = endIndex
+            while (startIndex < this.length && this[startIndex] == ' ') {
+                startIndex++
             }
         }
 
-        // Check if a dark pattern was found in the whole webpage
-        if (!darkPatternFound) {
-            Toast.makeText(requireContext(), "No Dark Pattern found in the whole webpage", Toast.LENGTH_LONG).show()
-        }
+        return chunks
     }
-
 
 
 
