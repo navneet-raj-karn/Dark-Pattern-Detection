@@ -37,7 +37,7 @@ class BrowseFragment (private var urlNew:String) : Fragment() {
         return view
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
+    @SuppressLint("SetJavaScriptEnabled", "ClickableViewAccessibility")
     override fun onResume() {
         super.onResume()
 
@@ -89,6 +89,7 @@ class BrowseFragment (private var urlNew:String) : Fragment() {
                     binding.webView.visibility=View.GONE
                     binding.customView.visibility=View.VISIBLE
                     binding.customView.addView(view)
+                    mainRef.binding.root.transitionToEnd()
                 }
 
                 override fun onHideCustomView() {
@@ -106,6 +107,11 @@ class BrowseFragment (private var urlNew:String) : Fragment() {
                 URLUtil.isValidUrl(urlNew)->loadUrl(urlNew)
                 urlNew.contains(".com",ignoreCase = true)->loadUrl(urlNew)
                 else->loadUrl("https://www.google.com/search?q=$urlNew")
+            }
+
+            binding.webView.setOnTouchListener { _, event ->
+                mainRef.binding.root.onTouchEvent(event)
+                return@setOnTouchListener false
             }
 
         }
