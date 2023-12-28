@@ -30,7 +30,8 @@
                 android:hint="@string/enter_url"
                 android:layout_weight="1"
                 android:paddingHorizontal="5dp"
-                android:background="@drawable/custom_design"/>
+                android:background="@drawable/custom_design"
+                android:singleLine="true"/>
             
             <ImageButton
                 android:id="@+id/goBtn"

@@ -2,6 +2,9 @@ package com.example.safebrowser
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -37,7 +40,7 @@ class BrowseFragment (private var urlNew:String) : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        val mainActivityRef=requireActivity() as MainActivity
+        val mainRef=requireActivity() as MainActivity
         binding.webView.apply {
             settings.javaScriptEnabled=true
             settings.setSupportZoom(true)
@@ -46,6 +49,7 @@ class BrowseFragment (private var urlNew:String) : Fragment() {
             webViewClient= object: WebViewClient(){
                 override fun doUpdateVisitedHistory(view: WebView?, url: String?, isReload: Boolean) {
                     super.doUpdateVisitedHistory(view, url, isReload)
+                    mainRef.binding.topSearchBar.text=SpannableStringBuilder(url)
                 }
 
                 override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {

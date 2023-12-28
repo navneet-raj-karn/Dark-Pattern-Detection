@@ -1,6 +1,8 @@
 package com.example.safebrowser
 
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -28,6 +30,8 @@ class HomeFragment : Fragment() {
         super.onResume()
 
         val mainActivityRef=requireActivity() as MainActivity
+        mainActivityRef.binding.topSearchBar.text=SpannableStringBuilder("")
+        binding.searchView.setQuery("",false)
 
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(result: String?): Boolean {
@@ -40,8 +44,8 @@ class HomeFragment : Fragment() {
             }
             override fun onQueryTextChange(newText: String?): Boolean = false
         })
-        mainActivityRef.binding.goBtn.setOnClickListener {
 
+        mainActivityRef.binding.goBtn.setOnClickListener {
             if(mainActivityRef.checkForInternet(requireContext())){
                 mainActivityRef.changeTab(mainActivityRef.binding.topSearchBar.text.toString(),
                     BrowseFragment(mainActivityRef.binding.topSearchBar.text.toString()))

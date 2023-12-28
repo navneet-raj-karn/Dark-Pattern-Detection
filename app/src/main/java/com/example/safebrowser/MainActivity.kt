@@ -112,6 +112,7 @@ class MainActivity : AppCompatActivity() {
 
     fun performPrediction(text: String) : String{
         // Init the classifier.
+        if(text.isEmpty()) return " "
         if ( !TextUtils.isEmpty( text ) ){
             // Tokenize and pad the given input text.
             val tokenizedMessage = classifier.tokenize( text )
@@ -121,6 +122,9 @@ class MainActivity : AppCompatActivity() {
             // Assuming binary classification, use a threshold (e.g., 0.5) to decide the class
             val threshold = 0.5
             val predictedClass = if (results[0] > threshold) "Dark Pattern" else "Not a Dark Pattern"
+            if(predictedClass=="Dark Pattern"){
+                println("Navneet the dark pattern was in $text")
+            }
 
             //binding.output.text = "Prediction: $predictedClass"
             return predictedClass
@@ -157,6 +161,19 @@ class MainActivity : AppCompatActivity() {
         } catch (e: Exception) {
             e.printStackTrace()
             throw e // Rethrow the exception for further analysis
+        }
+    }
+
+    // Function to save text to a file in internal storage
+    fun saveTextToFile(text: String, fileName: String) {
+        try {
+            val outputStream = openFileOutput(fileName, Context.MODE_PRIVATE)
+            outputStream.write(text.toByteArray())
+            outputStream.close()
+            Toast.makeText(applicationContext, "Text saved to $fileName", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(applicationContext, "Error saving text", Toast.LENGTH_SHORT).show()
         }
     }
 
