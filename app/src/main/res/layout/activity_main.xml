@@ -20,6 +20,7 @@
             android:orientation="horizontal"
             >
             <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/webIcon"
                 android:layout_width="25dp"
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_search"/>

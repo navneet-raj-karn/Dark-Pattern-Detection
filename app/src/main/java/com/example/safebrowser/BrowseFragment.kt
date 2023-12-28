@@ -77,6 +77,13 @@ class BrowseFragment (private var urlNew:String) : Fragment() {
 
             }
             webChromeClient=object: WebChromeClient(){
+                override fun onReceivedIcon(view: WebView?, icon: Bitmap?) {
+                    super.onReceivedIcon(view, icon)
+                    try {
+                        mainRef.binding.webIcon.setImageBitmap(icon)
+
+                    }catch (e: Exception){}
+                }
                 override fun onShowCustomView(view: View?, callback: CustomViewCallback?) {
                     super.onShowCustomView(view, callback)
                     binding.webView.visibility=View.GONE
