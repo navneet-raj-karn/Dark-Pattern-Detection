@@ -239,6 +239,7 @@ class BrowseFragment (private var urlNew:String) : Fragment() {
     }
 
     private fun highlightDarkPattern(chunk: String) {
+        println("Navneet here: $chunk")
 //        val javascript = """
 //        var darkPatternElements = document.getElementsByTagName("body")[0].innerHTML;
 //        var highlightedText = darkPatternElements.replace(new RegExp('(${"\\b" + chunk + "\\b"})', 'g'), '<span style="background-color: yellow;">$1</span>');

@@ -120,7 +120,7 @@ class MainActivity : AppCompatActivity() {
 
             val results = classifySequence( paddedMessage )
             // Assuming binary classification, use a threshold (e.g., 0.5) to decide the class
-            val threshold = 0.5
+            val threshold = 0.8
             val predictedClass = if (results[0] > threshold) "Dark Pattern" else "Not a Dark Pattern"
             if(predictedClass=="Dark Pattern"){
                 println("Navneet the dark pattern was in $text")
