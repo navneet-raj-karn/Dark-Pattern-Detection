@@ -1,6 +1,7 @@
 package com.example.safebrowser
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
@@ -61,18 +62,19 @@ class BrowseFragment (private var urlNew:String) : Fragment() {
                     return false
                 }
 
+                override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                    super.onPageStarted(view, url, favicon)
+                    mainRef.binding.progressBar.progress=0
+                    mainRef.binding.progressBar.visibility=View.VISIBLE
+                }
+
                 override fun onPageFinished(view: WebView?, url: String?) {
                     super.onPageFinished(view, url)
+                    mainRef.binding.progressBar.visibility=View.GONE
                     extractAndPassText()
-
-//                    binding.webView.evaluateJavascript("document.body.textContent") { text ->
-//
-//                        processText(text)
-//                    }
-
-
-
                 }
+
+
             }
             webChromeClient=object: WebChromeClient(){
                 override fun onShowCustomView(view: View?, callback: CustomViewCallback?) {
@@ -86,6 +88,11 @@ class BrowseFragment (private var urlNew:String) : Fragment() {
                     super.onHideCustomView()
                     binding.webView.visibility=View.VISIBLE
                     binding.customView.visibility=View.GONE
+                }
+
+                override fun onProgressChanged(view: WebView?, newProgress: Int) {
+                    super.onProgressChanged(view, newProgress)
+                    mainRef.binding.progressBar.progress=newProgress
                 }
             }
             when{
