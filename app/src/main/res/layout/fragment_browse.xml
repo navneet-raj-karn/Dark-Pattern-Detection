@@ -9,6 +9,13 @@
         android:id="@+id/webView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:visibility="visible"
         />
+
+    <FrameLayout
+        android:id="@+id/customView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
 
 </FrameLayout>

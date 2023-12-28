@@ -74,7 +74,20 @@ class BrowseFragment (private var urlNew:String) : Fragment() {
 
                 }
             }
-            webChromeClient= WebChromeClient()
+            webChromeClient=object: WebChromeClient(){
+                override fun onShowCustomView(view: View?, callback: CustomViewCallback?) {
+                    super.onShowCustomView(view, callback)
+                    binding.webView.visibility=View.GONE
+                    binding.customView.visibility=View.VISIBLE
+                    binding.customView.addView(view)
+                }
+
+                override fun onHideCustomView() {
+                    super.onHideCustomView()
+                    binding.webView.visibility=View.VISIBLE
+                    binding.customView.visibility=View.GONE
+                }
+            }
             when{
                 URLUtil.isValidUrl(urlNew)->loadUrl(urlNew)
                 urlNew.contains(".com",ignoreCase = true)->loadUrl(urlNew)
