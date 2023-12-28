@@ -2,10 +2,12 @@ package com.example.safebrowser
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
+import android.text.style.ForegroundColorSpan
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -187,6 +189,7 @@ class BrowseFragment (private var urlNew:String) : Fragment() {
             if (result == "Dark Pattern") {
                 darkPatternFound = true
                 darkcnt++; // Toast.makeText(requireContext(), "$result for "+ item, Toast.LENGTH_LONG).show()
+                highlightDarkPattern(item)
             }
             else
                 nondark++;
@@ -238,6 +241,16 @@ class BrowseFragment (private var urlNew:String) : Fragment() {
         }
 
         return chunks
+    }
+
+    private fun highlightDarkPattern(chunk: String) {
+        val javascript = """
+        var darkPatternElements = document.getElementsByTagName("body")[0].innerHTML;
+        var highlightedText = darkPatternElements.replace(new RegExp('($chunk)', 'g'), '<span style="color: red;">$1</span>');
+        document.getElementsByTagName("body")[0].innerHTML = highlightedText;
+    """.trimIndent()
+
+        binding.webView.evaluateJavascript(javascript, null)
     }
 
 
