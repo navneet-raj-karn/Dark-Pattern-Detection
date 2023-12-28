@@ -2,13 +2,8 @@ package com.example.safebrowser
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.os.Bundle
-import android.text.Spannable
-import android.text.SpannableString
 import android.text.SpannableStringBuilder
-import android.text.style.ForegroundColorSpan
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,8 +14,8 @@ import android.webkit.WebStorage
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import com.example.safebrowser.databinding.FragmentBrowseBinding
-import kotlin.time.times
 
 
 class BrowseFragment (private var urlNew:String) : Fragment() {
@@ -188,8 +183,8 @@ class BrowseFragment (private var urlNew:String) : Fragment() {
             val result = mainActivity.performPrediction(item)
             if (result == "Dark Pattern") {
                 darkPatternFound = true
+               highlightDarkPattern(item)
                 darkcnt++; // Toast.makeText(requireContext(), "$result for "+ item, Toast.LENGTH_LONG).show()
-                highlightDarkPattern(item)
             }
             else
                 nondark++;
@@ -244,14 +239,48 @@ class BrowseFragment (private var urlNew:String) : Fragment() {
     }
 
     private fun highlightDarkPattern(chunk: String) {
-        val javascript = """
-        var darkPatternElements = document.getElementsByTagName("body")[0].innerHTML;
-        var highlightedText = darkPatternElements.replace(new RegExp('($chunk)', 'g'), '<span style="color: red;">$1</span>');
-        document.getElementsByTagName("body")[0].innerHTML = highlightedText;
-    """.trimIndent()
+//        val javascript = """
+//        var darkPatternElements = document.getElementsByTagName("body")[0].innerHTML;
+//        var highlightedText = darkPatternElements.replace(new RegExp('(${"\\b" + chunk + "\\b"})', 'g'), '<span style="background-color: yellow;">$1</span>');
+//
+//        if (darkPatternElements !== highlightedText) {
+//            document.getElementsByTagName("body")[0].innerHTML = highlightedText;
+//        }
+//    """.trimIndent()
+        println("changing "+ chunk)
+        val javascript = "javascript:(function() {" +
+                "var searchText = '" + chunk + "';" +
+                "var regex = new RegExp(searchText, 'gi');" +
+                "var body = document.body;" +
+                "var textNodes = getTextNodes(body);" +
+                "textNodes.forEach(function(node) {" +
+                "   var matches = node.nodeValue.match(regex);" +
+                "   if (matches) {" +
+                "       var span = document.createElement('span');" +
+                "       span.innerHTML = node.nodeValue.replace(regex, '<span style=\"background-color: yellow;\">$&</span>'); " +
+                "       node.parentNode.replaceChild(span, node);" +
+                "   }" +
+                "});" +
+                "function getTextNodes(node) {" +
+                "   var textNodes = [];" +
+                "   if (node.nodeType == 3) {" +
+                "       textNodes.push(node);" +
+                "   } else {" +
+                "       var children = node.childNodes;" +
+                "       for (var i = 0; i < children.length; i++) {" +
+                "           textNodes = textNodes.concat(getTextNodes(children[i]));" +
+                "       }" +
+                "   }" +
+                "   return textNodes;" +
+                "}" +
+                "})()"
 
         binding.webView.evaluateJavascript(javascript, null)
     }
+
+
+
+
 
 
 
