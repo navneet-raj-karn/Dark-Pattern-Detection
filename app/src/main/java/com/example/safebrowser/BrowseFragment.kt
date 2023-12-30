@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.text.SpannableStringBuilder
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +17,7 @@ import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.safebrowser.databinding.FragmentBrowseBinding
+import kotlin.math.log
 
 
 class BrowseFragment (private var urlNew:String) : Fragment() {
@@ -70,6 +72,7 @@ class BrowseFragment (private var urlNew:String) : Fragment() {
                 override fun onPageFinished(view: WebView?, url: String?) {
                     super.onPageFinished(view, url)
                     mainRef.binding.progressBar.visibility=View.GONE
+
                     extractAndPassText()
                 }
 
@@ -131,43 +134,69 @@ class BrowseFragment (private var urlNew:String) : Fragment() {
     }
 
     private fun extractAndPassText(){
-        binding.webView.evaluateJavascript("(function () {\n" +
-                "  const walker = document.createTreeWalker(\n" +
-                "    document.body,\n" +
-                "    NodeFilter.SHOW_TEXT,\n" +
-                "    null,\n" +
-                "    false\n" +
-                "  );\n" +
+        binding.webView.evaluateJavascript("(function()\n" +
+                "{\n" +
+                "function isHidden(el) {\n" +
+                "    var style = window.getComputedStyle(el);\n" +
+                "    return style.display === 'none' || style.visibility === 'hidden';\n" +
+                "}\n" +
                 "\n" +
-                "  let node;\n" +
-                "  const visibleText = [];\n" +
+                "function containsJavaScriptCode(text) {\n" +
+                "    // Extended list of common JavaScript keywords\n" +
+                "    const javascriptKeywords = [\n" +
+                "        'document', 'window', 'setTimeout', 'setInterval', 'XMLHttpRequest', 'fetch',\n" +
+                "        'addEventListener', 'querySelector', 'getElementById', 'innerHTML', 'JSON',\n" +
+                "        'jquery', 'angular', 'react', 'Vue', 'axios', 'async', 'await', 'Promise',\n" +
+                "        'map', 'reduce', 'splice', 'querySelectorAll'\n" +
+                "        // Add more as needed\n" +
+                "    ];\n" +
+                "    return javascriptKeywords.some(keyword => text && text.includes(keyword));\n" +
+                "}\n" +
                 "\n" +
-                "  while ((node = walker.nextNode())) {\n" +
-                "    const parentElement = node.parentElement;\n" +
+                "var body = document.querySelector('body');\n" +
+                "var allTags = body.getElementsByTagName('*');\n" +
+                "var processedTextSet = new Set();\n" +
+                "var concatenatedText = '';\n" +
                 "\n" +
-                "    // Check if the parent element is visible\n" +
+                "// Iterate through each tag\n" +
+                "for (var i = 0, max = allTags.length; i < max; i++) {\n" +
+                "    var currentTag = allTags[i];\n" +
+                "\n" +
+                "    // Include inner text of <h2> tags with the specified class\n" +
                 "    if (\n" +
-                "      parentElement &&\n" +
-                "      (parentElement.offsetWidth > 0 ||\n" +
-                "        parentElement.offsetHeight > 0 ||\n" +
-                "        (parentElement.getClientRects().length > 0 &&\n" +
-                "          parentElement.getClientRects()[0].width > 0 &&\n" +
-                "          parentElement.getClientRects()[0].height > 0))\n" +
+                "        (currentTag.tagName.toLowerCase() === 'h2' &&\n" +
+                "            currentTag.classList.contains('a-carousel-heading')) ||\n" +
+                "        // Skip elements containing a script or specific patterns\n" +
+                "        currentTag.tagName.toLowerCase() === 'script' ||\n" +
+                "        !currentTag.innerText || // Check if innerText is defined\n" +
+                "        currentTag.innerText.includes('window.ue_ibe') ||\n" +
+                "        containsJavaScriptCode(currentTag.innerText)\n" +
                 "    ) {\n" +
-                "      visibleText.push(node.textContent.trim());\n" +
+                "        continue;\n" +
                 "    }\n" +
-                "  }\n" +
                 "\n" +
-                "  return visibleText.join(' ');\n" +
-                "}\n)();")
+                "    // Trim leading and trailing spaces, and replace multiple consecutive spaces with a single space\n" +
+                "    var innerText = currentTag.innerText.trim().replace(/\\s+/g, ' ');\n" +
+                "\n" +
+                "    // Define a set of special characters you want to exclude\n" +
+                "    var specialCharacters = \"!@#\$%^&*()_+~`-=[]{}|;:'\\\",.<>?/\";\n" +
+                "\n" +
+                "    if (!specialCharacters.includes(innerText.charAt(0)) && !processedTextSet.has(innerText)) {\n" +
+                "        concatenatedText += '*' + innerText;\n" +
+                "        processedTextSet.add(innerText);\n" +
+                "    }\n" +
+                "}\n" +
+                "\n" +
+                "return concatenatedText;\n" +
+                "})();")
         { html ->
-            println("Printing Here Start");
-            val chunks = html.chunkString(45)
-            println("Printing Here Processed");
-            println("Printing Here end");
-            processText(chunks)
-            //println(html)
-            // code here
+
+           val resultList = extractEnclosedSentences(html)
+            val finallist = splitStrings(resultList);
+            for(it in finallist)
+                Log.d("sam",it);
+           processText(finallist)
+
         }
 
     }
@@ -177,78 +206,47 @@ class BrowseFragment (private var urlNew:String) : Fragment() {
         val maxChunkSize = 50
         var darkcnt=1;
         var nondark=1;
+        val darklist = mutableListOf<String>()
+
 
         for (item in chunks) {
-            println("chunk is "+item)
             val result = mainActivity.performPrediction(item)
             if (result == "Dark Pattern") {
                 darkPatternFound = true
-               highlightDarkPattern(item)
+                darklist.add(item)
                 darkcnt++; // Toast.makeText(requireContext(), "$result for "+ item, Toast.LENGTH_LONG).show()
             }
             else
                 nondark++;
-        }
-        //checking ratio but not perfect
-        println(darkcnt*100/(nondark+darkcnt))
-        println(nondark*100/(nondark+darkcnt))
 
-        if(darkcnt*100/(nondark+darkcnt)>=5)
+
+        }
+        for (it in darklist) {
+            Log.d("Darklist",it)
+           highlightDarkPatterns(it)
+        }
+
+
+
+        //checking ratio but not perfect
+
+
+        if(darkcnt*100/(nondark+darkcnt)>=1)
             Toast.makeText(requireContext(), "Dark Detected", Toast.LENGTH_LONG).show()
         else
             Toast.makeText(requireContext(), "Clean Page", Toast.LENGTH_LONG).show()
 
-        // Dark pattern already found, no need to search further
-
-
-
-//        for (sentence in sentences) {
-//            if (!darkPatternFound) { // Check if a dark pattern is already found
-//                val potentialChunk = "$sentence".trim()
-//
-//                val result = mainActivity.performPrediction(potentialChunk)
-//                if (result == "Dark Pattern") {
-//                    darkPatternFound = true
-//                    Toast.makeText(requireContext(), "Predicted = $result", Toast.LENGTH_LONG).show()
-//                    break
-//                }
-//            } else {
-//                break // Dark pattern already found, no need to search further
-//            }
-//        }
-
 
     }
     //chunking those scrapped text , bad Time complexity but okay
-    fun String.chunkString(maxLength: Int): List<String> {
-        val chunks = mutableListOf<String>()
-        var startIndex = 0
-        while (startIndex < this.length) {
-            var endIndex = minOf(startIndex + maxLength, this.length)
-            while (endIndex < this.length && this[endIndex - 1] !in listOf(' ', '.')) {
-                endIndex--
-            }
-            chunks.add(this.substring(startIndex, endIndex).trim())
-            startIndex = endIndex
-            while (startIndex < this.length && this[startIndex] == ' ') {
-                startIndex++
-            }
-        }
-
-        return chunks
+    fun extractEnclosedSentences(inputString: String): List<String> {
+        val pattern = Regex("\\*(.*?)\\*") // Using a non-greedy match to capture content between '*'
+        val matchResults = pattern.findAll(inputString)
+        return matchResults.map { it.groupValues[1] }.toList()
     }
 
-    private fun highlightDarkPattern(chunk: String) {
-        println("Navneet here: $chunk")
-//        val javascript = """
-//        var darkPatternElements = document.getElementsByTagName("body")[0].innerHTML;
-//        var highlightedText = darkPatternElements.replace(new RegExp('(${"\\b" + chunk + "\\b"})', 'g'), '<span style="background-color: yellow;">$1</span>');
-//
-//        if (darkPatternElements !== highlightedText) {
-//            document.getElementsByTagName("body")[0].innerHTML = highlightedText;
-//        }
-//    """.trimIndent()
-        println("changing "+ chunk)
+    private fun highlightDarkPatterns(chunk: String) {
+
         val javascript = "javascript:(function() {" +
                 "var searchText = '" + chunk + "';" +
                 "var regex = new RegExp(searchText, 'gi');" +
@@ -276,7 +274,9 @@ class BrowseFragment (private var urlNew:String) : Fragment() {
                 "}" +
                 "})()"
 
-        binding.webView.evaluateJavascript(javascript, null)
+        binding.webView.evaluateJavascript(javascript.toString(),
+            {null
+            })
     }
 
 
@@ -286,4 +286,40 @@ class BrowseFragment (private var urlNew:String) : Fragment() {
 
 
 
+
+
+
+
+
+
+
 }
+fun splitStrings(inputList: List<String>, maxLength: Int = 30): List<String> {
+    val resultList = mutableListOf<String>()
+
+    for (originalString in inputList) {
+        val words = originalString.split(" ")
+        var currentChunk = words[0]
+
+        for (word in words.drop(1)) {
+            if (currentChunk.length + word.length + 1 <= maxLength) {
+                currentChunk += " $word"
+            } else {
+                resultList.add(currentChunk)
+                currentChunk = word
+            }
+        }
+
+        if (currentChunk.isNotEmpty()) {
+            resultList.add(currentChunk)
+        }
+    }
+
+    return resultList
+}
+
+
+
+
+
+
