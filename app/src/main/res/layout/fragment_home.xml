@@ -9,6 +9,7 @@
     
     <SearchView
         android:id="@+id/searchView"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -17,6 +18,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.3"
         android:queryHint="@string/search_hint"
+
         android:background="@drawable/custom_design"
         android:layout_marginHorizontal="24dp"
         android:iconifiedByDefault="false"/>
