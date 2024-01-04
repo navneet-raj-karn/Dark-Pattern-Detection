@@ -1,13 +1,18 @@
-package com.example.safebrowser
+package com.example.safebrowser.fragment
 
+import android.content.Intent
 import android.os.Bundle
-import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
+import androidx.recyclerview.widget.GridLayoutManager
+import com.example.safebrowser.adapter.BookmarkAdapter
+import com.example.safebrowser.activity.MainActivity
+import com.example.safebrowser.R
+import com.example.safebrowser.activity.BookmarkActivity
 import com.example.safebrowser.databinding.FragmentHomeBinding
 import com.google.android.material.snackbar.Snackbar
 
@@ -53,12 +58,22 @@ class HomeFragment : Fragment() {
         mainActivityRef.binding.goBtn.setOnClickListener {
             if(mainActivityRef.checkForInternet(requireContext())){
                 mainActivityRef.changeTab(mainActivityRef.binding.topSearchBar.text.toString(),
-                    BrowseFragment(mainActivityRef.binding.topSearchBar.text.toString()))
+                    BrowseFragment(mainActivityRef.binding.topSearchBar.text.toString())
+                )
             }else{
                 Snackbar.make(binding.root,"Internet not Connected",3000).show()
             }
         }
 
+        binding.recyclerView.setHasFixedSize(true)
+        binding.recyclerView.setItemViewCacheSize(5)
+        binding.recyclerView.layoutManager = GridLayoutManager(requireContext(), 5)
+        binding.recyclerView.adapter = BookmarkAdapter(requireContext())
+        if(MainActivity.bookmarkList.size < 1)
+            binding.viewAllBtn.visibility = View.GONE
+        binding.viewAllBtn.setOnClickListener {
+            startActivity(Intent(requireContext(), BookmarkActivity::class.java))
+        }
 
 
     }

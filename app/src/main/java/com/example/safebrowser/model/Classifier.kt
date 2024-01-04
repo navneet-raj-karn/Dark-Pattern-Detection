@@ -1,4 +1,4 @@
-package com.example.safebrowser
+package com.example.safebrowser.model
 
 import android.content.Context
 import kotlinx.coroutines.CoroutineScope
@@ -37,7 +37,7 @@ class Classifier(context: Context, jsonFilename: String, inputMaxLen : Int) {
         return json
     }
 
-    fun processVocab( callback: VocabCallback ) {
+    fun processVocab( callback: VocabCallback) {
         CoroutineScope( Dispatchers.Main ).launch {
             loadVocab( callback , loadJSONFromAsset( filename )!! )
         }
