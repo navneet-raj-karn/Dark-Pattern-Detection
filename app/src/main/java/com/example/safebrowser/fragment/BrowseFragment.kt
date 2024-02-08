@@ -303,18 +303,6 @@ class BrowseFragment (private var urlNew:String) : Fragment() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 }
 fun splitStrings(inputList: List<String>, maxLength: Int = 30): List<String> {
     val resultList = mutableListOf<String>()
