@@ -11,12 +11,12 @@
         android:orientation="horizontal">
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/backBtn"
+            android:id="@+id/cntBtn"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             app:icon="@drawable/ic_back"
-            android:text="@string/back"
+            android:text="Dark Count"
             app:iconGravity="top"
             android:background="?attr/selectableItemBackground"
             app:iconTint="@color/black"
@@ -24,12 +24,12 @@
             android:textAllCaps="false"/>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/forwardBtn"
+            android:id="@+id/reportBtn"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            app:icon="@drawable/ic_forward"
-            android:text="@string/forward"
+            app:icon="@drawable/ic_report"
+            android:text="Report Dark Pattern"
             app:iconGravity="top"
             android:background="?attr/selectableItemBackground"
             app:iconTint="@color/black"
