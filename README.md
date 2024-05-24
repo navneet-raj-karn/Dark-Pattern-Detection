@@ -95,13 +95,10 @@ Welcome to the Dark Pattern Detection repository by Team Innovisionaries. Our pr
 2. **Run the Flask Backend**:
     ```sh
     cd MLModel
-    python app.py
+    python server.py
     ```
 
-3. **Set up the Browser Extension**:
-    - Follow instructions in the `Extension` folder.
-
-4. **Run the Mobile App**:
+3. **Run the Mobile App**:
     - Open the `App` folder in Android Studio and run on an emulator or device.
 
 ## Contributing
