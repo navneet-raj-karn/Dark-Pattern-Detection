@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Safe Browse</title>
+    <script src="popup.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="header">
+        <span id="extension_name">Safe Browse</span>
+    </div>
+    <div class="button-container">
+         <button id="b1" class="analyze-button" type="button">Analyze</button>
+    </div>
+    <div class="counter-container">
+        Dark Patterns : 
+        <span id="count">0</span>
+    </div>
+
+    <div id="output">
+        PROCESSING THIS SITE 
+    </div>
+
+    <div id="feedbackFormContainer" style="display: none;">
+        <iframe src="https://forms.gle/tWgyVathxJ8vunaD8" width="400" height="500" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+    </div>
+    <!-- Link to toggle the visibility of the embedded Google Form -->
+    <a href="feedback.html" id="feedbackLink">Feedback</a>
+
+</body>
+</html>

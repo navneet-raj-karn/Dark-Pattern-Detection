@@ -1,0 +1,183 @@
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
+
+/* General styles */
+body {
+    height: 400px;
+    width: 250px;
+    margin: 15px;
+    background-color: #001f3f; /* Navy blue background */
+    color: white;
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+    animation: fadeInDown 0.5s ease-in-out;
+}
+
+/* Header */
+.header {
+    height: 50px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #001f3f; /* Navy blue background */
+    font-family: 'Arial', sans-serif; /* Change font family */
+    font-size: 40px; /* Increase font size */
+}
+
+/* Button container */
+.button-container {
+    height: 100px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #001f3f; /* Green accent */
+}
+
+/* Counter container */
+.counter-container {
+    height: 40px;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border: 2px solid #001f3f; /* Darker border */
+    background-color: #001f3f; /* Navy blue background */
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Output container */
+#output {
+    height: 50px;
+    width: 220px;
+    overflow: auto;
+    border: 1px solid #ccc;
+    padding: 5px;
+    color: black; /* Black text */
+    font-size: 14px;
+    border-radius: 8px;
+    background-color: white; /* White background */
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.4s ease-in-out, color 0.4s ease-in-out;
+}
+
+/* Output container hover effect */
+#output:hover {
+    background-color: #001f3f; /* Navy blue background */
+    color: white; /* White text */
+}
+
+/* Button */
+#b1 {
+    width: 6em;
+    height: 6em;
+    outline: none;
+    border-radius: 50%;
+    background-color: #2ecc71; /* Green accent */
+    border: 4px #22ec07 solid; /* Navy blue border */
+    box-shadow: inset 2px 2px 0px #04d96f, inset -2px -2px 0px #134577;
+    transition: box-shadow 0.3s ease-in-out;
+    color: white;
+}
+
+/* Button hover effect */
+#b1:hover {
+    box-shadow: inset 2px -2px 0px #001f3f, inset 2px 2px 0px #001f3f, 0px 0px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Dark mode button */
+#dark-mode {
+    content: '';
+    display: inline-block;
+    cursor: pointer;
+    height: 30px;
+    width: 30px;
+    border-radius: 50%;
+    transition: all 0.3s ease-in-out;
+    background-color: transparent;
+    box-shadow: inset -4px -4px 0px #001f3f; /* Navy blue shadow */
+    border: none;
+}
+
+/* Dark mode button light mode */
+#dark-mode.light {
+    background-color: #2ecc71; /* Green accent */
+    box-shadow: none;
+}
+
+/* Report form */
+#reportForm {
+    display: none;
+    margin-top: 15px;
+    padding-bottom: 30px;
+}
+
+#reportForm h2 {
+    margin-bottom: 10px;
+    color: #001f3f; /* Navy blue text */
+    text-align: center;
+}
+
+#reportForm label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #001f3f; /* Navy blue text */
+}
+
+#reportForm textarea,
+#reportForm input[type="text"],
+#reportForm select {
+    width: calc(100% - 10px);
+    padding: 5px;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+#reportForm input[type="submit"] {
+    width: auto;
+    padding: 8px 20px;
+    background-color: #2ecc71; /* Green accent */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#reportForm input[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+#reportForm::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* Blacklisted websites */
+#blacklistedWebsites h2,
+#blacklistSection h2 {
+    color: #2ecc71; /* Green accent */
+}
+
+/* Keyframes */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
