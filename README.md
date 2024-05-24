@@ -111,4 +111,4 @@ We welcome contributions from the community. Please read the contribution guidel
 This project is licensed under the MIT License.
 
 ## Contact
-For any questions or feedback, please contact us at [email@example.com].
+For any questions or feedback, please contact us at [imnavneet1234@gmail.com].
