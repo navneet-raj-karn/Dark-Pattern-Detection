@@ -55,7 +55,7 @@ Welcome to the Dark Pattern Detection repository by Team Innovisionaries. Our pr
 2. **Backend Processing**: Sends extracted text to the Flask backend for processing.
 3. **Preprocessing**: Cleans and tokenizes text, removes stopwords.
 4. **ML Model Analysis**: Analyzes text for dark patterns.
-5. **Highlighting**: Highlights identified dark pattern sentences on the web page.
+5. **Highlighting**: Highlights identified dark pattern sentences on the web page .
 
 ### App Workflow
 1. **Text Extraction**: Extracts text using the Android WebView component.
